@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BigTime Tools</title>
+    <link rel="stylesheet" href="libs/bootstrap.min.css">
+    <style>
+        body {
+            background: linear-gradient(to bottom right, #000066, #3399FF, #FF66CC, #FF9900);
+            color: white;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+        }
+        .header {
+            position: relative;
+            padding: 20px 20px 0 20px;
+            text-align: center;
+        }
+        .header-side {
+            position: relative;
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            width: 100%;
+            z-index: 10;
+        }
+        .user-info {
+            flex: 0 0 60%;
+            width: auto;
+            background-color: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(8px);
+            border-radius: 12px;
+            padding: 15px;
+            color: white;
+            font-size: 13px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 9;
+            text-align: left;
+        }
+        .user-info p {
+            margin: 0;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .info-label {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .info-value {
+            color: #fff;
+            font-weight: 600;
+        }
+        .header-log h2 {
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        .main {
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            gap: 20px;
+        }
+        .log-container {
+            flex: 1;
+            max-height: 300px;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            background-color: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(8px);
+            border-radius: 12px;
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .log-output {
+            min-height: 200px;
+            max-height: 300px;
+            overflow-y: auto;
+            text-align: left;
+        }
+        .log-output:hover {
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.35);
+        }
+        .table {
+            background-color: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(8px);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            transition: box-shadow 0.3s ease;
+        }
+        .table:hover {
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.35);
+        }
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        .table-striped tbody tr:nth-of-type(even) {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+        .table thead {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+        .table tbody {
+            display: block;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .table tbody tr {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+        .table-container {
+            flex: 1;
+            overflow-y: auto;
+            max-height: 100vh; 
+            padding-right: 8px; 
+        }
+        .table-container h2 {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 16px;
+        }
+        .modal-content {
+            background-color: rgba(255, 255, 255, 0.3);
+            color: white;
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .badge-ready {
+            display: inline-block;
+            padding: 2px 6px;
+            margin-left: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+            background-color: #28a745;
+            border-radius: 4px;
+        }
+        .expired {
+            color: #ff4d4f;
+            font-weight: bold;
+            background-color: rgba(255, 77, 79, 0.1);
+        }
+        .toolbox-container {
+            padding: 20px;
+            min-height: 300px;
+            overflow-y: auto;
+        }
+
+        .toolbox-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .toolbox-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 15px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .toolbox-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.4);
+        }
+
+        .card-header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .sub-items {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .sub-items h4 {
+            font-size: 14px;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .sub-items ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sub-items li {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 5px;
+        }
+        .info-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .info-labels,
+        .info-values {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .info-label,
+        .info-value {
+            width: 33.33%;
+            text-align: center;
+            display: inline-block;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px; 
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1); 
+            border-radius: 8px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.4); 
+            border-radius: 8px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.6); 
+        }
+        .scrollable-content {
+            overflow-y: auto;
+            max-height: 60vh;
+            padding-right: 8px;
+        }
+        .sub-items {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin: 0; 
+            padding: 0; 
+            border: none; 
+        }
+        .value {
+            color: #f0fc00;
+            text-align: right;
+            font-weight: 500;
+        }
+        #spaceTableBody > div {
+            background-color: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+            color: white;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
+            transition: box-shadow 0.3s ease;
+        }
+
+        #spaceTableBody > div:hover {
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.35);
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        #spaceTableBody p {
+            margin: 4px 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .exp-tag {
+            display: inline-block;
+            margin-left: 6px;
+            padding: 2px 6px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            font-size: 12px;
+            color: #f0fc00;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>BigTime Service</h1>
+        <div class="header-side">
+            <div class="user-info">
+                <div class="info-row">
+                    <span class="label">用户名:</span>
+                    <span class="value" id="username"></span>
+                </div>
+                <div class="info-row">
+                    <span class="label">USDC:</span>
+                    <span class="value" id="balance"></span>
+                </div>
+                <div class="info-row">
+                    <span class="label">OL:</span>
+                    <span class="value" id="olBalance"></span>
+                </div>
+                <div class="info-row">
+                    <span class="label">BIGTIME:</span>
+                    <span class="value" id="bigtimeTotal"></span>
+                </div>
+                <div class="info-row">
+                    <span class="label">BIGTIME可提取数量:</span>
+                    <span class="value" id="bigtimeWithdrawable"></span>
+                </div>
+                <div class="info-row">
+                    <span class="label">数据更新时间:</span>
+                    <span class="value" id="updateTime"></span>
+                </div>
+                <div class="info-row">
+                    <span class="label">感谢使用作者大使码: CLOUDXL</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">欢迎关注作者公众号: BigTimeService</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">关注公众号获取插件最新更新</span>
+                </div>
+            </div>
+            <div class="log-container">
+                <div id="logOutput" class="log-output"></div>
+            </div>
+        </div>
+    </div>
+    <div class="main">
+        <div class="table-container">
+            <h2>Drop</h2>
+            <div class="scrollable-content">
+                <div id="spaceTableBody"></div>
+            </div>
+        </div>
+        <div class="table-container">
+            <h2>工具</h2>
+            <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
+                <select class="form-select bg-light bg-opacity-25 border-0" id="tradeTypeFilter" style="max-width: 150px;">
+                    <option value="">交易类型</option>
+                    <option value="buy">买卖</option>
+                    <option value="rent">租赁</option>
+                </select>
+                <select class="form-select bg-light bg-opacity-25 border-0" id="itemTypeFilter" style="max-width: 150px;" hidden>
+                    <option value="">物品类型</option>
+                    <option value="hourglass">沙漏</option>
+                    <option value="warden">守卫</option>
+                    <option value="space">空间</option>
+                </select>
+                <select class="form-select bg-light bg-opacity-25 border-0" id="qualityFilter" style="max-width: 220px;" hidden>
+                    <option value="">物品品质</option>
+                    <option>Common</option>
+                    <option>Uncommon</option>
+                    <option>Rare</option>
+                    <option>Epic</option>
+                    <option>Legendary</option>
+                    <option>Mythic</option>
+                    <option>Exalted</option>
+                </select>
+                <button class="btn btn-primary rounded-pill px-4" id="searchButton">
+                    查询
+                </button>
+                <button class="btn btn-secondary rounded-pill px-4" id="resetButton">
+                    重置
+                </button>
+            </div>
+            <div class="scrollable-content">
+                <div id="queryResultContainer" class="toolbox-container">
+                    <p class="text-muted">请选择条件后点击查询</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="announcementModal" tabindex="-1" aria-labelledby="announcementModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content p-4">
+            <div class="modal-header">
+              <h5 class="modal-title" id="announcementModalLabel">📢 欢迎使用 BigTime Service！</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+            </div>
+            <div class="modal-body">
+              <ul>
+                <li>❤️插件开源且免费❤️</li>
+                <li>❤️支持作者，使用作者的大使码：CLOUDXL❤️</li>
+              </ul>
+              <p class="text-center mt-3" id="countdownTimer">10 秒后自动关闭</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal fade" id="userErrorModal" tabindex="-1" aria-labelledby="userErrorModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content p-4">
+            <div class="modal-header">
+              <h5 class="modal-title" id="userErrorModalLabel">用户数据获取失败</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+            </div>
+            <div class="modal-body">
+              <p>获取用户数据失败，请确保本浏览器已登录OpenLoot。</p>
+              <p id="loginHintText" class="text-danger mt-2">如果不想登入可直接关闭弹窗。</p>
+            </div>
+            <div class="modal-footer">
+              <button id="retryLoginBtn" type="button" class="btn btn-primary">跳转至OpenLoot登入</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    <script src="libs/moment.min.js"></script>
+    <script src="libs/bootstrap.bundle.min.js"></script>
+    <script src="logger.js"></script>
+    <script type="module" src="index.js"></script>
+    <script type="module" src="main.js"></script>
+</html>

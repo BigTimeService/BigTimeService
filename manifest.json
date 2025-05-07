@@ -1,0 +1,61 @@
+{
+  "manifest_version": 3,
+
+  "name": "BigTimeService",
+  "version": "1.0",
+  "description": "查看空间破碎掉落时间，方便快捷查询openloot中NFT价格信息等数据",
+  "icons": {
+    "16": "BTS_logo_16x16.png",
+    "32": "BTS_logo_32x32.png",
+    "48": "BTS_logo_48x48.png",
+    "128": "BTS_logo_128x128.png"
+  },
+  "action": {
+      "default_icon": {
+        "16": "BTS_logo_16x16.png",
+        "32": "BTS_logo_32x32.png",
+        "48": "BTS_logo_48x48.png",
+        "128": "BTS_logo_128x128.png"
+      }
+   },
+  "permissions": [
+      "activeTab",
+      "storage",
+      "webRequest",
+      "cookies"
+  ],
+  "background": {
+      "service_worker": "background.js"
+  },
+  "content_security_policy": {
+      "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'; connect-src 'self' https://*.openloot.com"
+   },
+   "content_scripts": [
+    {
+      "matches": ["https://openloot.com/*"],
+      "js": ["openloot_injected.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "host_permissions": [
+    "https://api.openloot.com/*",
+    "https://vault-api.openloot.com/*",
+    "https://listing-api.openloot.com/*"
+  ],
+  
+  "web_accessible_resources": [
+      {
+          "resources": [
+            "index.html",
+            "index.js",
+            "main.js",
+            "data.json",
+            "logger.js",
+            "libs/moment.min.js",
+            "libs/bootstrap.bundle.min.js",
+            "libs/bootstrap.min.css"
+          ],
+          "matches": ["<all_urls>"]
+      }
+  ]
+}
